@@ -31,6 +31,8 @@ security:
             jwt: ~
 
     access_control:
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
+        - { path: ^/api/doc.json, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/houses/available, roles: PUBLIC_ACCESS }

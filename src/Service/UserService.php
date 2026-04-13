@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Entity\User;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UserService
@@ -20,7 +23,7 @@ class UserService
         $user->setEmail($email);
         $user->setPhone($phone);
         $user->setName($name);
-        $user->setCreatedAt(new \DateTimeImmutable());
+        $user->setCreatedAt(new DateTimeImmutable());
 
         $this->em->persist($user);
         $this->em->flush();

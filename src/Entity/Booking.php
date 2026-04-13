@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -25,6 +28,5 @@ class Booking
     private ?string $comment = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
+    private ?DateTimeImmutable $createdAt = null;
 }

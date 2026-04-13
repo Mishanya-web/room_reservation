@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Service\CsvService;
@@ -21,7 +23,7 @@ class HouseController
     {
         $houses = $this->csvService->read('houses.csv');
 
-        $available = array_filter($houses, function($house) {
+        $available = array_filter($houses, function ($house) {
             return $house['available'] == '1';
         });
 

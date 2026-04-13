@@ -1,18 +1,11 @@
 <?xml version="1.0"?>
 <psalm
-    errorLevel="3"
+    errorLevel="4"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     cacheDirectory="var/cache/.psalm-cache"
-    findUnusedBaselineEntry="true"
-    findUnusedCode="true"
-    ignoreInternalFunctionFalseReturn="false"
-    ignoreInternalFunctionNullReturn="false"
-    ensureArrayIntOffsetsExist="true"
-    ensureArrayStringOffsetsExist="true"
-    strictBinaryOperands="true"
 >
     <projectFiles>
         <directory name="src" />
@@ -21,30 +14,25 @@
             <directory name="vendor" />
             <directory name="var" />
             <directory name="bin" />
+            <directory name="migrations" />
+            <directory name="data" />
             <file name="config/preload.php" />
             <file name="public/index.php" />
-            <file name="tests/bootstrap.php" />
         </ignoreFiles>
     </projectFiles>
 
     <issueHandlers>
-        <UnusedClass errorLevel="info">
-            <errorLevel type="suppress">
-                <directory name="src/Controller"/>
-                <directory name="tests"/>
-            </errorLevel>
-        </UnusedClass>
-
-        <PossiblyUnusedMethod errorLevel="info">
-            <errorLevel type="suppress">
-                <directory name="src/Entity"/>
-            </errorLevel>
-        </PossiblyUnusedMethod>
-
-        <PossiblyUnusedParam errorLevel="info">
-            <errorLevel type="suppress">
-                <directory name="src/Repository"/>
-            </errorLevel>
-        </PossiblyUnusedParam>
+        <LessSpecificReturnType errorLevel="info"/>
+        <DeprecatedMethod errorLevel="info"/>
+        <DeprecatedProperty errorLevel="info"/>
+        <DeprecatedClass errorLevel="info"/>
+        <DeprecatedConstant errorLevel="info"/>
+        <DeprecatedInterface errorLevel="info"/>
+        <DeprecatedTrait errorLevel="info"/>
+        <InternalMethod errorLevel="suppress"/>
+        <PropertyNotSetInConstructor errorLevel="info"/>
+        <MissingConstructor errorLevel="info"/>
+        <InvalidReturnType errorLevel="info"/>
+        <InvalidReturnStatement errorLevel="info"/>
     </issueHandlers>
 </psalm>

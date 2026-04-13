@@ -1,0 +1,50 @@
+name: CI
+
+on:
+    push:
+        branches: [ develop, main, feature/** ]
+    pull_request:
+        branches: [ develop ]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        services:
+            postgres:
+                image: postgres:16
+                env:
+                    POSTGRES_DB: room_reservation_test
+                    POSTGRES_USER: test_user
+                    POSTGRES_PASSWORD: test_password
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.3'
+                  extensions: pdo_pgsql
+
+            - name: Install Composer dependencies
+              run: composer install --no-progress
+
+            - name: Create test database
+              run: |
+                  php bin/console doctrine:database:create --env=test
+                  php bin/console doctrine:migrations:migrate --env=test --no-interaction
+              env:
+                  DATABASE_URL: postgresql://test_user:test_password@127.0.0.1:5432/room_reservation_test
+
+            - name: Run PHPUnit tests
+              run: php bin/phpunit
+              env:
+                  DATABASE_URL: postgresql://test_user:test_password@127.0.0.1:5432/room_reservation_test

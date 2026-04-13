@@ -73,9 +73,12 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "friendsofphp/php-cs-fixer": "^3.95",
         "phpunit/phpunit": "^12.5",
+        "squizlabs/php_codesniffer": "^4.0",
         "symfony/browser-kit": "7.3.*",
         "symfony/css-selector": "7.3.*",
-        "symfony/maker-bundle": "^1.67"
+        "symfony/maker-bundle": "^1.67",
+        "vimeo/psalm": "^6.16"
     }
 }

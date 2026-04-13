@@ -26,13 +26,13 @@ jobs:
                     --health-retries 5
 
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
                   php-version: '8.3'
-                  extensions: pdo_pgsql
+                  extensions: pdo_pgsql, pdo
 
             - name: Install Composer dependencies
               run: composer install --no-progress --no-interaction
@@ -51,6 +51,15 @@ jobs:
               env:
                   DATABASE_URL: postgresql://test_user:test_password@127.0.0.1:5432/room_reservation_test?serverVersion=16&charset=utf8
                   APP_ENV: test
+
+            - name: Run PHP CS Fixer (dry-run)
+              run: vendor/bin/php-cs-fixer fix --dry-run --diff
+
+            - name: Run PHP Code Sniffer
+              run: vendor/bin/phpcs --standard=phpcs.xml.dist
+
+            - name: Run Psalm
+              run: vendor/bin/psalm --config=psalm.xml
 
             - name: Run PHPUnit tests
               run: php bin/phpunit

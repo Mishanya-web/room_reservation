@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\CsvService;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +19,42 @@ class BookingController extends AbstractController
     public function __construct(private CsvService $csvService) {}
 
     #[Route('', name: 'create', methods: ['POST'])]
+    #[OA\Post(
+        summary: 'Create a new booking',
+        description: 'Creates a booking for a house for the authenticated user',
+        requestBody: new OA\RequestBody(
+            description: 'Booking data',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['house_id', 'comment'],
+                properties: [
+                    new OA\Property(property: 'house_id', type: 'string', example: '2'),
+                    new OA\Property(property: 'comment', type: 'string', example: 'Хочу домик у моря'),
+                ],
+                type: 'object'
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Booking created successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'id', type: 'string', example: '7a8b3c5d2e1f4a6b8c0d2e4f'),
+                        new OA\Property(property: 'house_id', type: 'string', example: '2'),
+                        new OA\Property(property: 'user_id', type: 'integer', example: 1),
+                        new OA\Property(property: 'user_phone', type: 'string', example: '79141234567'),
+                        new OA\Property(property: 'comment', type: 'string', example: 'Хочу домик у моря'),
+                        new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(response: 400, description: 'Validation error'),
+            new OA\Response(response: 401, description: 'Not authenticated'),
+            new OA\Response(response: 404, description: 'House not found'),
+        ]
+    )]
     public function createBooking(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
@@ -70,6 +107,44 @@ class BookingController extends AbstractController
     }
 
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
+    #[OA\Put(
+        summary: 'Update booking comment',
+        description: 'Updates the comment of an existing booking',
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                description: 'Booking ID',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        requestBody: new OA\RequestBody(
+            description: 'Updated comment',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['comment'],
+                properties: [
+                    new OA\Property(property: 'comment', type: 'string', example: 'Передумал, хочу другой домик'),
+                ],
+                type: 'object'
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Booking updated successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Booking updated successfully'),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(response: 401, description: 'Not authenticated'),
+            new OA\Response(response: 404, description: 'Booking not found'),
+        ]
+    )]
     public function updateBooking(string $id, Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('ROLE_USER');

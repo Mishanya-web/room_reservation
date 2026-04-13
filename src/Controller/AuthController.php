@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,41 @@ class AuthController extends AbstractController
     ) {}
 
     #[Route('/register', name: 'register', methods: ['POST'])]
+    #[OA\Post(
+        summary: 'Register a new user',
+        requestBody: new OA\RequestBody(
+            description: 'User registration data',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'phone', 'name', 'password'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@example.com'),
+                    new OA\Property(property: 'phone', type: 'string', pattern: '^[78]\d{10}$', example: '79141234567'),
+                    new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
+                ],
+                type: 'object'
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'User created successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'id', type: 'integer', example: 1),
+                        new OA\Property(property: 'email', type: 'string', example: 'user@example.com'),
+                        new OA\Property(property: 'phone', type: 'string', example: '79141234567'),
+                        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+                        new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string')),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(response: 400, description: 'Validation error'),
+            new OA\Response(response: 409, description: 'User already exists'),
+        ]
+    )]
     public function register(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -72,6 +108,34 @@ class AuthController extends AbstractController
     }
 
     #[Route('/login', name: 'login', methods: ['POST'])]
+    #[OA\Post(
+        summary: 'Login user and get JWT token',
+        requestBody: new OA\RequestBody(
+            description: 'Login credentials',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['phone', 'password'],
+                properties: [
+                    new OA\Property(property: 'phone', type: 'string', example: '79141234567'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
+                ],
+                type: 'object'
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Login successful',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'token', type: 'string', example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...'),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(response: 401, description: 'Invalid credentials'),
+        ]
+    )]
     public function login(): JsonResponse
     {
         // This route is handled by Symfony's json_login
@@ -80,6 +144,24 @@ class AuthController extends AbstractController
     }
 
     #[Route('/logout', name: 'logout', methods: ['POST'])]
+    #[OA\Post(
+        summary: 'Logout user',
+        description: 'Invalidates the current JWT token',
+        security: [['Bearer' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Logged out successfully',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Logged out successfully'),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(response: 401, description: 'Not authenticated'),
+        ]
+    )]
     public function logout(): JsonResponse
     {
         // This route is handled by Symfony's logout
@@ -87,6 +169,28 @@ class AuthController extends AbstractController
     }
 
     #[Route('/me', name: 'me', methods: ['GET'])]
+    #[OA\Get(
+        summary: 'Get current authenticated user',
+        description: 'Returns information about the currently authenticated user',
+        security: [['Bearer' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'User information',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'id', type: 'integer', example: 1),
+                        new OA\Property(property: 'email', type: 'string', example: 'user@example.com'),
+                        new OA\Property(property: 'phone', type: 'string', example: '79141234567'),
+                        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+                        new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string')),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(response: 401, description: 'Not authenticated'),
+        ]
+    )]
     public function me(): JsonResponse
     {
         $user = $this->getUser();

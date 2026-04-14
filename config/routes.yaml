@@ -8,3 +8,13 @@ app.swagger_ui:
     path: /api/doc
     methods: GET
     defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
+admin_login:
+    path: /admin/login
+    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+    defaults:
+        template: '@EasyAdmin/page/login.html.twig'
+    methods: [GET, POST]
+
+admin_logout:
+    path: /admin/logout
